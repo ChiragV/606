@@ -1,0 +1,203 @@
+---
+title: "606 Project Proposal"
+author: "Chirag Vithalani"
+date: "March 5, 2016"
+output: html_document
+css: ./lab.css
+---
+```{r include=FALSE, cache=FALSE}
+# DO NOT REMOVE
+# THIS IS FOR SETTING SOME PLOTTING PARAMETERS SO THAT YOUR PLOTS DON'T TAKE UP TOO MUCH SPACE
+# IF YOU WOULD LIKE TO CHANGE THESE, SEE HELP FILES ON THE par() FUNCTION
+# OR ASK FOR HELP
+library(knitr)
+## set global chunk options
+opts_chunk$set(fig.path='figure/manual-', cache.path='cache/manual-', fig.align='center', fig.show='hold', par=TRUE)
+## tune details of base graphics (http://yihui.name/knitr/hooks)
+knit_hooks$set(par=function(before, options, envir){
+if (before && options$fig.show!='none') par(mar=c(4,4,.2,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3)
+})
+
+#columnsOfEnvInterest<-c("B021", "S020","S003" , "X003", "X025")
+# Environment_Subset <- WVS_Longitudinal_1981_2014_R_v2015_04_18[,columnsOfEnvInterest]
+#write.csv(Environment_Subset,file="Environment_Subset.csv")
+#save(Environment_Subset, file="Environment_Subset.RData")
+
+```
+<hr />
+
+```{r}
+
+
+
+Environment_Subset_Data <- "Environment_Subset.RData"
+load(Environment_Subset_Data)
+colnames(Environment_Subset) <- c("Environment_Related_Question",
+                          "Year_Of_survey", 
+                          "Country_or_Region", 
+                          "Age", 
+                          "Highest_educational_level")
+
+# Subset to US,India & China
+# also removing missing/unanswered data
+
+
+Environment_Subset_US_India_China<-subset( Environment_Subset,(Country_or_Region==356 | Country_or_Region==156 |Country_or_Region==840) & Environment_Related_Question >0  )
+
+
+```
+
+
+### Research question 
+
+**You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
+
+How people think about environment in three different countries China,US and India?  ( World's biggest polluters** ).
+
+If time permits other variables like age and level of education will be explored.
+
+
+### Cases 
+
+**What are the cases, and how many are there?**
+
+Total cases are `r nrow(Environment_Subset_US_India_China)`
+
+
+
+### Data collection 
+
+**Describe the method of data collection.**
+
+As per "Collection Procedures" section at http://www.worldvaluessurvey.org/WVSContents.jsp 
+
+"The mode of data collection for WVS surveys is face-to-face interviewing. Other modes (e.g., telephone, mail, internet) are not acceptable except under very exceptional circumstances and only on an experimental basis"
+
+R Data file downloaded from http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp
+and then filtered as per requirement
+
+### Type of study 
+
+**What type of study is this (observational/experiment)?**
+
+This is observational study.
+
+
+### Data Source 
+
+Link :
+
+http://www.worldvaluessurvey.org/WVSDocumentationWVL.jsp
+
+Citation :
+WORLD VALUES SURVEY 1981-2014 LONGITUDINAL AGGREGATE v.20150418. World Values Survey Association (www.worldvaluessurvey.org). Aggregate File Producer: JDSystems, Madrid SPAIN.
+
+
+
+
+### Response 
+
+The response variable would be answer to question 
+"Environmental problems in the world: Global warming or the greenhouse effect."
+
+#### Answer would be one of the following ( for this project we are considering only first four values).
+
+
+
+Value | Description
+------|------------
+1|Very serious
+2|Somewhat serious
+3|Not very serious
+4|Not serious at all
+-5|Missing; Unknown
+-4|Not asked in survey
+-3|Not applicable
+-2|No answer
+-1|Don´t know
+
+We wil check how answer to this question varies with region,and also possibly, with age and education.
+
+### Explanatory 
+
+**What is the explanatory variable, and what type is it (numerical/categorival)?**
+
+Explanatory variables are region ( US,China & India ), education qualification and age. 
+
+####Region is categorical variable
+Value | Description
+------|------------
+156 | China
+356 | India
+840 | US
+
+####Education qualification is categorical variable
+
+Value | Description
+------|------------
+1|Inadequately completed elementary education
+2|Completed (compulsory) elementary education
+3|Incomplete secondary school: technical/vocational type/(Compulsory) elementary education and basic vocational qualification
+4|Complete secondary school: technical/vocational type/Secondary, intermediate vocational qualification
+5|Incomplete secondary: university-preparatory type/Secondary, intermediate general qualification
+6|Complete secondary: university-preparatory type/Full secondary, maturity level certificate
+7|Some university without degree/Higher education - lower-level tertiary certificate
+8|University with degree/Higher education - upper-level tertiary certificate
+-5|Missing; Unknown
+-4|Not asked in survey
+-3|Not applicable; No formal education
+-2|No answer
+-1|Don´t know
+
+####Age is numerical variable
+
+Value | Description
+------|------------
+15 to 98|age ranges from 15 to 98
+-5|Missing; Unknown
+-4|Not asked in survey
+-3|Not applicable
+-2|No answer
+-1|Don't know
+
+
+
+### Relevant summary statistics 
+
+**Provide summary statistics relevant to your research question. For example, if you're comparing means across groups provide means, SDs, sample sizes of each group. This step requires the use of R, hence a code chunk is provided below. Insert more code chunks as needed.**
+
+We can ask below questions from data available.
+
+1. Which country's people are serious about environment.
+2. How this answer varies with age & education qualification.
+3. Who are the people not serious  ( about environment ) ? what are their age, educational qualification and belong with which country.
+4. We can also try different combination like China+India ( most populous ),China+US ( largest economies )and US+India ( oldest and largest democracies ).
+
+```{r, echo=FALSE}
+
+summary(Environment_Subset_US_India_China)
+
+ChinaData<-subset(Environment_Subset_US_India_China,Country_or_Region==156 ) 
+#mean(ChinaData$Environment_Related_Question)
+
+IndiaData<-subset(Environment_Subset_US_India_China,Country_or_Region==356) 
+#mean(IndiaData$Environment_Related_Question)
+
+
+USData<-subset(Environment_Subset_US_India_China,Country_or_Region==840 )
+#mean(USData$Environment_Related_Question)
+
+
+```
+The mean value of question "Environmental problems in the world: Global warming or the greenhouse effect"
+In China `r mean(ChinaData$Environment_Related_Question)` , in India `r mean(IndiaData$Environment_Related_Question)` and in US `r mean(USData$Environment_Related_Question)`
+
+#### References
+
+WORLD VALUES SURVEY 1981-2014 LONGITUDINAL AGGREGATE v.20150418. World Values Survey Association (www.worldvaluessurvey.org). Aggregate File Producer: JDSystems, Madrid SPAIN.
+
+#### Also read :
+
+**World's biggest polluters - China, U.S. and India :
+
+http://news.nationalpost.com/news/worlds-biggest-polluters-china-u-s-and-india-help-drive-carbon-dioxide-levels-to-record-high
